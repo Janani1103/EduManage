@@ -1,0 +1,154 @@
+<app-layout [navItems]="navItems">
+  <div class="page-header">
+    <h1>Teachers</h1>
+    <p>Manage teaching staff</p>
+  </div>
+  <div class="card">
+    <div class="card-header">
+      <h3>All Teachers</h3>
+      <button class="btn btn-primary" (click)="openModal()">+ Add Teacher</button>
+    </div>
+    @if (loading) { <div class="loading">Loading...</div> }
+    @else if (!teachers.length) { <div class="empty-state"><p>No teachers found</p></div> }
+    @else {
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr><th>ID</th><th>Name</th><th>Email</th><th>Qualification</th><th>Status</th><th>Actions</th></tr>
+          </thead>
+          <tbody>
+            @for (t of teachers; track t._id) {
+              <tr>
+                <td>{{ t.employeeId }}</td>
+                <td>{{ t.user?.name }}</td>
+                <td>{{ t.user?.email }}</td>
+                <td>{{ t.qualification || '-' }}</td>
+                <td><span class="badge" [class.badge-success]="t.user?.isActive" [class.badge-danger]="!t.user?.isActive">{{ t.user?.isActive ? 'Active' : 'Inactive' }}</span></td>
+                <td>
+                  <div style="display: flex; gap: 8px;">
+                    <button class="btn btn-outline btn-sm" (click)="viewTeacher(t)">View</button>
+                    <button class="btn btn-secondary btn-sm" (click)="editTeacher(t)">Edit</button>
+                    <button class="btn btn-sm" [class.btn-danger]="t.user?.isActive" [class.btn-primary]="!t.user?.isActive" (click)="toggleStatus(t)">
+                      {{ t.user?.isActive ? 'Deactivate' : 'Activate' }}
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</app-layout>
+
+@if (showModal) {
+  <div class="modal-overlay" (click)="showModal = false" (mousedown)="$event.target === $event.currentTarget && (showModal = false)">
+    <div class="modal" (click)="$event.stopPropagation()" (mousedown)="$event.stopPropagation()">
+      <!-- VIEW MODE -->
+      @if (modalMode === 'view' && selectedTeacher) {
+        <h2>Teacher Details</h2>
+        <div style="margin-bottom: 20px;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid #eee; padding-bottom: 8px;">
+            <strong>Employee ID:</strong>
+            <span>{{ selectedTeacher.employeeId }}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid #eee; padding-bottom: 8px;">
+            <strong>Name:</strong>
+            <span>{{ selectedTeacher.user?.name || '-' }}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid #eee; padding-bottom: 8px;">
+            <strong>Email:</strong>
+            <span>{{ selectedTeacher.user?.email || '-' }}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid #eee; padding-bottom: 8px;">
+            <strong>Phone:</strong>
+            <span>{{ selectedTeacher.user?.phone || '-' }}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid #eee; padding-bottom: 8px;">
+            <strong>Qualification:</strong>
+            <span>{{ selectedTeacher.qualification || '-' }}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid #eee; padding-bottom: 8px;">
+            <strong>Specialization:</strong>
+            <span>{{ selectedTeacher.specialization || '-' }}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid #eee; padding-bottom: 8px;">
+            <strong>Salary:</strong>
+            <span>{{ selectedTeacher.salary ? (selectedTeacher.salary | currency) : '-' }}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid #eee; padding-bottom: 8px;">
+            <strong>Join Date:</strong>
+            <span>{{ selectedTeacher.joinDate ? (selectedTeacher.joinDate | date:'mediumDate') : '-' }}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid #eee; padding-bottom: 8px;">
+            <strong>Status:</strong>
+            <span class="badge" [class.badge-success]="selectedTeacher.user?.isActive" [class.badge-danger]="!selectedTeacher.user?.isActive">
+              {{ selectedTeacher.user?.isActive ? 'Active' : 'Inactive' }}
+            </span>
+          </div>
+          <div style="margin-bottom: 12px; border-bottom: 1px solid #eee; padding-bottom: 8px;">
+            <strong>Bio:</strong>
+            <p style="margin-top: 4px; font-size: 14px; color: #666; white-space: pre-line;">{{ selectedTeacher.bio || 'No bio provided.' }}</p>
+          </div>
+          <div style="margin-bottom: 12px; padding-bottom: 8px;">
+            <strong>Assigned Subjects:</strong>
+            <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px;">
+              @if (selectedTeacher.subjects?.length) {
+                @for (sub of selectedTeacher.subjects; track sub._id) {
+                  <span class="badge badge-info">{{ sub.name }} ({{ sub.code }})</span>
+                }
+              } @else {
+                <span style="font-size: 14px; color: #999;">No subjects assigned.</span>
+              }
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;gap:12px;margin-top:20px">
+          <button class="btn btn-secondary" (click)="editTeacher(selectedTeacher)">Edit Teacher</button>
+          <button class="btn btn-outline" (click)="showModal = false">Close</button>
+        </div>
+      }
+      <!-- ADD / EDIT MODE -->
+      @else {
+        <h2>{{ modalMode === 'edit' ? 'Edit Teacher' : 'Add Teacher' }}</h2>
+        <div class="form-row">
+          <div class="form-group"><label>Name</label><input [(ngModel)]="form.name"></div>
+          <div class="form-group"><label>Email</label><input type="email" [(ngModel)]="form.email"></div>
+        </div>
+        <div class="form-row">
+          @if (modalMode === 'add') {
+            <div class="form-group"><label>Password</label><input type="password" [(ngModel)]="form.password" autocomplete="new-password" (click)="$event.stopPropagation()"></div>
+          }
+          <div class="form-group"><label>Phone</label><input [(ngModel)]="form.phone"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Qualification</label><input [(ngModel)]="form.qualification"></div>
+          <div class="form-group"><label>Specialization</label><input [(ngModel)]="form.specialization"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Salary</label><input type="number" [(ngModel)]="form.salary"></div>
+        </div>
+        <div class="form-group">
+          <label>Bio</label>
+          <textarea [(ngModel)]="form.bio" placeholder="Enter short bio..."></textarea>
+        </div>
+        <div class="form-group">
+          <label>Assign Subjects</label>
+          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; max-height: 120px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; border-radius: 8px;">
+            @for (sub of subjects; track sub._id) {
+              <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer; font-size: 14px;">
+                <input type="checkbox" [checked]="isSubjectSelected(sub._id)" (change)="toggleSubject(sub._id)">
+                <span>{{ sub.name }} ({{ sub.code }})</span>
+              </label>
+            }
+          </div>
+        </div>
+        <div style="display:flex;gap:12px;margin-top:20px">
+          <button class="btn btn-primary" (click)="save()">Save</button>
+          <button class="btn btn-outline" (click)="showModal = false">Cancel</button>
+        </div>
+      }
+    </div>
+  </div>
+}

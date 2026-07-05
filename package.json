@@ -1,0 +1,13 @@
+{
+  "name": "edumanage",
+  "version": "1.0.0",
+  "description": "EduManage - Teaching Service Management System",
+  "private": true,
+  "scripts": {
+    "backend": "cd backend && npm run dev",
+    "backend:seed": "cd backend && npm run seed",
+    "frontend": "cd frontend && npm start",
+    "frontend:build": "cd frontend && npm run build",
+    "install:all": "cd backend && npm install && cd ../frontend && npm install"
+  }
+}

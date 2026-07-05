@@ -1,0 +1,82 @@
+<app-layout [navItems]="navItems">
+  <div class="page-header">
+    <h1>Admin Dashboard</h1>
+    <p>Overview of your teaching institute</p>
+  </div>
+
+  @if (loading) {
+    <div class="loading">Loading dashboard...</div>
+  } @else {
+    <div class="stats-grid">
+      <div class="stat-card">
+        <span class="stat-icon">👨‍🎓</span>
+        <div class="stat-value">{{ stats.totalStudents || 0 }}</div>
+        <div class="stat-label">Total Students</div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon">👨‍🏫</span>
+        <div class="stat-value">{{ stats.totalTeachers || 0 }}</div>
+        <div class="stat-label">Total Teachers</div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon">🏫</span>
+        <div class="stat-value">{{ stats.activeClasses || 0 }}</div>
+        <div class="stat-label">Active Classes</div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon">📋</span>
+        <div class="stat-value">{{ stats.monthlyAttendance || 0 }}</div>
+        <div class="stat-label">Monthly Attendance</div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon">💰</span>
+        <div class="stat-value">{{ stats.pendingFees || 0 }}</div>
+        <div class="stat-label">Pending Fees</div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon">💵</span>
+        <div class="stat-value">Rs. {{ stats.monthlyIncome || 0 }}</div>
+        <div class="stat-label">Monthly Income</div>
+      </div>
+    </div>
+
+    <div class="charts-row">
+      <div class="card chart-card">
+        <div class="card-header"><h3>Attendance Statistics</h3></div>
+        @if (stats.attendanceStats?.length) {
+          <div class="chart-bars">
+            @for (item of stats.attendanceStats; track item._id) {
+              <div class="bar-item">
+                <span class="bar-label">{{ item._id }}</span>
+                <div class="bar-track">
+                  <div class="bar-fill" [style.width.%]="item.count * 10"></div>
+                </div>
+                <span class="bar-value">{{ item.count }}</span>
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="empty-state"><p>No attendance data yet</p></div>
+        }
+      </div>
+      <div class="card chart-card">
+        <div class="card-header"><h3>Student Performance</h3></div>
+        @if (stats.performanceData?.length) {
+          <div class="chart-bars">
+            @for (item of stats.performanceData; track item._id) {
+              <div class="bar-item">
+                <span class="bar-label">Grade {{ item._id || 'N/A' }}</span>
+                <div class="bar-track">
+                  <div class="bar-fill performance" [style.width.%]="item.count * 15"></div>
+                </div>
+                <span class="bar-value">{{ item.count }}</span>
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="empty-state"><p>No performance data yet</p></div>
+        }
+      </div>
+    </div>
+  }
+</app-layout>

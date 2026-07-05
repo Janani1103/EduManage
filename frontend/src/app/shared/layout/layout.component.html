@@ -1,0 +1,26 @@
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="brand-icon">📚</span>
+      <span class="brand-text">{{ title }}</span>
+    </div>
+    <nav class="nav">
+      @for (item of navItems; track item.route) {
+        <a [routerLink]="item.route" routerLinkActive="active" class="nav-item">
+          <span class="nav-icon">{{ item.icon }}</span>
+          <span>{{ item.label }}</span>
+        </a>
+      }
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <span class="user-name">{{ auth.currentUser?.name }}</span>
+        <span class="user-role badge badge-info">{{ auth.currentUser?.role }}</span>
+      </div>
+      <button class="btn btn-outline btn-sm logout-btn" (click)="logout()">Logout</button>
+    </div>
+  </aside>
+  <main class="main-content">
+    <ng-content></ng-content>
+  </main>
+</div>

@@ -1,0 +1,88 @@
+$primary: #B22222;
+$primary-dark: #8B1A1A;
+$secondary: #2C3E50;
+
+.layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 260px;
+  background: linear-gradient(180deg, $primary 0%, $primary-dark 100%);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  height: 100vh;
+  z-index: 100;
+}
+
+.brand {
+  padding: 24px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+
+  .brand-icon { font-size: 28px; }
+  .brand-text { font-size: 20px; font-weight: 700; letter-spacing: 0.5px; }
+}
+
+.nav {
+  flex: 1;
+  padding: 16px 12px;
+  overflow-y: auto;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  color: rgba(255, 255, 255, 0.85);
+  border-radius: 8px;
+  margin-bottom: 4px;
+  transition: all 0.2s;
+  text-decoration: none;
+
+  &:hover { background: rgba(255, 255, 255, 0.12); color: white; }
+  &.active { background: rgba(255, 255, 255, 0.2); color: white; font-weight: 600; }
+
+  .nav-icon { font-size: 18px; width: 24px; text-align: center; }
+}
+
+.sidebar-footer {
+  padding: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+
+  .user-info {
+    margin-bottom: 12px;
+
+    .user-name { display: block; font-weight: 600; font-size: 14px; }
+    .user-role { margin-top: 4px; background: rgba(255,255,255,0.2) !important; color: white !important; }
+  }
+
+  .logout-btn {
+    width: 100%;
+    border-color: rgba(255,255,255,0.5) !important;
+    color: white !important;
+    &:hover { background: white !important; color: $primary !important; }
+  }
+}
+
+.main-content {
+  flex: 1;
+  margin-left: 260px;
+  padding: 32px;
+  min-height: 100vh;
+}
+
+@media (max-width: 768px) {
+  .sidebar { width: 70px;
+    .brand-text, .nav-item span:not(.nav-icon), .user-info, .logout-btn span { display: none; }
+    .brand { justify-content: center; }
+    .nav-item { justify-content: center; padding: 14px; }
+  }
+  .main-content { margin-left: 70px; padding: 16px; }
+}
